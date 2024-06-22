@@ -1,4 +1,6 @@
-﻿
+﻿using Parking.Cache;
+using Parking.Core.Cache;
+
 namespace Parking
 {
     public class Program
@@ -13,6 +15,8 @@ namespace Parking
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddTransient<ICacheService, CacheService>();
 
             var app = builder.Build();
 

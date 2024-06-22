@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Parking.Account\Parking.Account.csproj" />
+    <ProjectReference Include="..\Parking.Cache\Parking.Cache.csproj" />
     <ProjectReference Include="..\Parking.Core\Parking.Core.csproj" />
     <ProjectReference Include="..\Parking.DataBase\Parking.DataBase.csproj" />
     <ProjectReference Include="..\Parking.Payment\Parking.Payment.csproj" />

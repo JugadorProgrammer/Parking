@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>788eb7ec-02de-434c-810c-13ec54be9705</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Parking.Account\Parking.Account.csproj" />
+    <ProjectReference Include="..\Parking.Core\Parking.Core.csproj" />
+    <ProjectReference Include="..\Parking.DataBase\Parking.DataBase.csproj" />
+    <ProjectReference Include="..\Parking.Payment\Parking.Payment.csproj" />
+  </ItemGroup>
+
+</Project>

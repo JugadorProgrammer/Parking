@@ -10,9 +10,9 @@ namespace Parking.DataBase
     public class DataBaseService : IDataBaseService
     {
         private readonly string _connectionString;
-        public DataBaseService(IConfiguration configuration)
+        public DataBaseService(IServiceProvider serviceProvider)
         {
-            _connectionString = configuration["DatabaseSettings:ConnectionString"]!;
+            _connectionString = ((IConfiguration)serviceProvider.GetService(typeof(IConfiguration))!)["DatabaseSettings:ConnectionString"]!;
         }
 
         #region User

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 using Parking.Core.DataBase;
-using Parking.Core.DataBase.Models;
 using Parking.Core.Email;
 using Parking.DataBase;
 using Parking.Email;
@@ -31,7 +29,6 @@ namespace Parking
 
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<IDataBaseService, DataBaseService>();
-            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             var app = builder.Build();
 

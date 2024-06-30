@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Parking.Core.DataBase;
 using Parking.Core.DataBase.Models;
@@ -20,12 +19,10 @@ namespace Parking.Controllers
         private readonly string _hostName;
         private readonly IDataBaseService _dataBaseService;
         private readonly IEmailService _emailService;
-        private readonly IPasswordHasher<User> _passwordHasher;
         public AccountController(IServiceProvider serviceProvider)
         {
             _dataBaseService = serviceProvider.GetService<IDataBaseService>()!;
             _emailService = serviceProvider.GetService<IEmailService>()!;
-            _passwordHasher = serviceProvider.GetService<IPasswordHasher<User>>()!;
             _hostName = ((IConfiguration)serviceProvider.GetService(typeof(IConfiguration))!)["Host:Name"]!;
         }
 
@@ -41,7 +38,7 @@ namespace Parking.Controllers
                 return NotFound("User not found!");
             }
 
-            user.Guid = GetNewUserGuid(user);
+            user.Guid = GetNewUserGuid();
 
             var message = $@"<h3>To recover your password, follow the link - {_hostName}/Account/SetPassword/{user.Guid} </h3> 
 <h5>If you do not want to recover your password, ignore this letter.</h5>";
@@ -79,6 +76,10 @@ namespace Parking.Controllers
             {
                 return NotFound("User not found!");
             }
+            else if (!user.IsEmailConfirmed)
+            {
+                return BadRequest("Email is not confirmed!");
+            }
 
             await Authenticate(user.Name);
             return Ok();
@@ -97,7 +98,7 @@ namespace Parking.Controllers
         public async Task<IActionResult> SingUp([ModelBinder] UserDTO userDTO)
         {
             var user = userDTO.GetUser();
-            user.Guid = GetNewUserGuid(user);
+            user.Guid = GetNewUserGuid();
             user.Password = GetHash(user.Password);
             await _dataBaseService.CreateUser(user);
 
@@ -125,6 +126,31 @@ namespace Parking.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> SendNewConfirmeEmail(string userName)
+        {
+            var user =  await _dataBaseService.GetUser(userName);
+
+            if (user is null)
+            {
+                return NotFound("User not found!");
+            }
+            else if (user.IsEmailConfirmed)
+            {
+                return BadRequest("Email is not confirmed!");
+            }
+            var guid = GetNewUserGuid();
+
+            var message = $@"<h3>To confirme your account, follow the link - {_hostName}/Account/ConfirmeEmail/{guid} </h3> 
+<h5>If you do not want to confirme your account, ignore this letter.</h5>";
+            await _emailService.SendEmail(user.Email, "Confirme your mail!", message);
+
+            user.Guid = guid;
+            await _dataBaseService.UpdateUser(user);
+            return Ok();
+        }
+
         #region NonAction
         [NonAction]
         private async Task Authenticate(string userName)
@@ -141,7 +167,7 @@ namespace Parking.Controllers
         }
 
         [NonAction]
-        private string GetNewUserGuid(User user)
+        private string GetNewUserGuid()
         {
             return Guid.NewGuid().ToString().Replace("/", "").Replace("%", "");
         }

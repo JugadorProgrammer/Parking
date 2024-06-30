@@ -11,8 +11,9 @@ namespace Parking.Email
         private readonly string _senderName;
         private readonly string _sourceEmailAdress;
         private readonly string _sourceEmailPassword;
-        public EmailService(IConfiguration configuration)
+        public EmailService(IServiceProvider serviceProvider)
         {
+            var configuration = (IConfiguration)serviceProvider.GetService(typeof(IConfiguration))!;
             _senderName = configuration["EmailSettings:SenderName"]!;
             _sourceEmailAdress = configuration["EmailSettings:SenderEmailAdress"]!;
             _sourceEmailPassword = configuration["EmailSettings:SenderEmailPassword"]!;

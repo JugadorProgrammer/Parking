@@ -1,5 +1,10 @@
-﻿using Parking.Cache;
-using Parking.Core.Cache;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Parking.Core.DataBase;
+using Parking.Core.DataBase.Models;
+using Parking.Core.Email;
+using Parking.DataBase;
+using Parking.Email;
 
 namespace Parking
 {
@@ -16,7 +21,17 @@ namespace Parking
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddTransient<ICacheService, CacheService>();
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => //CookieAuthenticationOptions
+                {
+                    options.LoginPath = new PathString("/Account/Login");
+                    options.LogoutPath = new PathString("/Account/Logout");
+                });
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddTransient<IEmailService, EmailService>();
+            builder.Services.AddTransient<IDataBaseService, DataBaseService>();
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             var app = builder.Build();
 
@@ -29,9 +44,8 @@ namespace Parking
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-
+            app.UseAuthentication(); 
+            app.UseAuthorization();  
 
             app.MapControllers();
 
